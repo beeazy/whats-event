@@ -25,6 +25,25 @@ app.get('/events-mombasa', async (req, res) => {
   }
 });
 
+app.get('/events', async (req, res) => {
+  try {
+    // Fetch events concurrently
+    const [nairobiEvents, mombasaEvents] = await Promise.all([
+      getNairobiEvents(),
+      getMombasaEvents(),
+    ]);
+
+    // Combine the events into a single array
+    const combinedEvents = [...nairobiEvents, ...mombasaEvents];
+
+    // Send the combined array as the response
+    res.json(combinedEvents);
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    res.status(500).json({ error: 'Failed to fetch events' });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
