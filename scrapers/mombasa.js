@@ -9,6 +9,10 @@ function cleanText(text) {
 // Regular expression to match dates in the format "Day DDth Month"
 const dateRegex = /^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon\.|Tue\.|Wed\.|Thu\.|Fri\.|Sat\.|Sun\.) \d{1,2}(st|nd|rd|th) [A-Za-z]+$/;
 
+function standardizeMonth(rawDate) {
+    return rawDate.replace(/Dezember|Decembar|Decembre|Decembru|Diciembre/gi, 'December');
+  }
+
 async function getMombasaEvents() {
     const response = await axios.get('https://whats-on-mombasa.com/');
     const html = response.data;
@@ -24,7 +28,11 @@ async function getMombasaEvents() {
         // Look for the date element
         const dateElement = $element.find('font[color="#FFFFFF"]');
         if (dateElement.length) {
-            const rawDate = cleanText(dateElement.text());
+            // const rawDate = cleanText(dateElement.text());
+            let rawDate = cleanText(dateElement.text());
+            
+            rawDate = standardizeMonth(rawDate); // Standardize month names
+            
             if (dateRegex.test(rawDate)) {
                 // Add the event date to the groupedEvents object if it's valid
                 if (!groupedEvents[rawDate]) groupedEvents[rawDate] = [];

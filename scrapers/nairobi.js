@@ -9,6 +9,10 @@ function cleanText(text) {
 // Regular expression to match dates in the format "Day DDth Month"
 const dateRegex = /^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday) \d{1,2}(st|nd|rd|th) [A-Za-z]+$/;
 
+function standardizeMonth(rawDate) {
+  return rawDate.replace(/Dezember|Decembar|Decembre|Decembru|Diciembre/gi, 'December');
+}
+
 async function getNairobiEvents() {
   const response = await axios.get('https://whats-on-nairobi.com/');
   const html = response.data;
@@ -23,7 +27,9 @@ async function getNairobiEvents() {
     // Find the date element
     const dateElement = $element.find('font[color="#FFFFFF"]');
     if (dateElement.length) {
-      const rawDate = cleanText(dateElement.text());
+      // const rawDate = cleanText(dateElement.text());
+      let rawDate = cleanText(dateElement.text());
+      rawDate = standardizeMonth(rawDate); // Standardize month names
       if (dateRegex.test(rawDate)) {
         // Initialize the date key in groupedEvents if not already present
         if (!groupedEvents[rawDate]) groupedEvents[rawDate] = [];
