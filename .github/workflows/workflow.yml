@@ -1,0 +1,13 @@
+name: Keep Server Awake
+on:
+  schedule:
+    - cron: "*/14 6-23,0 * * *" # Every 14 minutes between 6 AM and 12 AM UTC
+jobs:
+  ping-server:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send HTTP Request to Prevent Sleep
+        uses: fjogeleit/http-request-action@v1.14.0
+        with:
+          url: https://whats-event.onrender.com/events
+          method: POST
